@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import { useFirebase } from './fb';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import Home from './Home';
+import WaitingRoom from './WaitingRoom';
 
 function App() {
   const app = useFirebase();
@@ -14,9 +17,16 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <p>Hello, World!</p>
-    </div>
+    <BrowserRouter>
+      <Switch>
+        <Route path="/wait/:gameId">
+          <WaitingRoom />
+        </Route>
+        <Route>
+          <Home />
+        </Route>
+      </Switch>
+    </BrowserRouter>
   );
 }
 
