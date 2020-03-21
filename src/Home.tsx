@@ -1,7 +1,7 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import styled from 'styled-components';
-import { BigButton } from './Common';
+import React from "react";
+import { useHistory } from "react-router-dom";
+import styled from "styled-components";
+import { BigButton } from "./Common";
 
 function Home() {
   const history = useHistory();
@@ -16,15 +16,28 @@ function Home() {
       history.push(`/wait/${room}`);
     }
   }
-  return <HomeWrapper>
-    <h3>Room Code</h3>
-    <BigInput type="text" ref={roomRef} placeholder="Enter Room Code" maxLength={4} style={{ textTransform: "uppercase" }}/>
+  return (
+    <HomeWrapper>
+      <h3>Room Code</h3>
+      <BigInput
+        type="text"
+        ref={roomRef}
+        placeholder="Enter Room Code"
+        maxLength={4}
+        style={{ textTransform: "uppercase" }}
+      />
 
-    <h3>Name</h3>
-    <BigInput type="text" ref={nameRef} placeholder="Enter Name" maxLength={12}/>
+      <h3>Name</h3>
+      <BigInput
+        type="text"
+        ref={nameRef}
+        placeholder="Enter Name"
+        maxLength={12}
+      />
 
-    <BigButton onClick={onClick}>Play</BigButton>
-  </HomeWrapper>;
+      <BigButton onClick={onClick}>Play</BigButton>
+    </HomeWrapper>
+  );
 }
 
 const HomeWrapper = styled.div`

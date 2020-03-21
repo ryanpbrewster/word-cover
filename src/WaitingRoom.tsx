@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import firebase from 'firebase';
-import { useFirebase } from './fb';
-import { Redirect, useParams } from 'react-router-dom';
-import { BigButton } from './Common';
-import styled from 'styled-components';
+import React, { useEffect, useState } from "react";
+import firebase from "firebase";
+import { useFirebase } from "./fb";
+import { Redirect, useParams } from "react-router-dom";
+import { BigButton } from "./Common";
+import styled from "styled-components";
 
 function SanitizedWaitingRoom() {
   const { gameId } = useParams();
@@ -21,11 +21,14 @@ interface WaitingRoomProps {
 }
 function WaitingRoom({ gameId, name: myName }: WaitingRoomProps) {
   const { app, me } = useFirebase();
-  const [ waiting, setWaiting ] = useState<UserMap>({});
+  const [waiting, setWaiting] = useState<UserMap>({});
 
   useEffect(() => {
     console.log(`marking ${me}=${myName} as waiting in wait/${gameId}`);
-    app.database().ref(`wait/${gameId}/${me}`).set(myName);
+    app
+      .database()
+      .ref(`wait/${gameId}/${me}`)
+      .set(myName);
   }, [app, me, gameId, myName]);
 
   useEffect(() => {
@@ -33,8 +36,8 @@ function WaitingRoom({ gameId, name: myName }: WaitingRoomProps) {
       const key = snap.key!;
       const value = snap.val();
       console.log("recv: ", key, value);
-      if (typeof(value) === "string") {
-        setWaiting((acc) => ({ ...acc, [key]: value }));
+      if (typeof value === "string") {
+        setWaiting(acc => ({ ...acc, [key]: value }));
       }
     }
     console.log(`listening to wait/${gameId}`);
@@ -44,15 +47,17 @@ function WaitingRoom({ gameId, name: myName }: WaitingRoomProps) {
       console.log(`unlisten from wait/${gameId}`);
       ref.off("child_added", cb);
     };
-  }, [app, gameId, myName ]);
+  }, [app, gameId, myName]);
 
   const playerContent = Object.entries(waiting).map(([id, name]) => {
     return <PlayerCard key={id}>{name}</PlayerCard>;
   });
-  return <WaitingPlayers>
-    <BigButton>Start</BigButton>
-    {playerContent}
-  </WaitingPlayers>;
+  return (
+    <WaitingPlayers>
+      <BigButton>Start</BigButton>
+      {playerContent}
+    </WaitingPlayers>
+  );
 }
 
 type UserMap = { [key: string]: string };

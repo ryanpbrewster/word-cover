@@ -1,5 +1,5 @@
-import firebase from 'firebase/app';
-import 'firebase/database';
+import firebase from "firebase/app";
+import "firebase/database";
 
 const CONFIG = {
   apiKey: "AIzaSyBxBnQGMQ8IkCmZn78uOlGWW3Si3Q9li9Q",
@@ -23,7 +23,9 @@ export function useFirebase(): FirebaseService {
     const app = firebase.initializeApp(CONFIG);
     let me = localStorage.getItem("me");
     if (!me) {
-      me = Math.random().toString(36).substring(2);
+      me = Math.random()
+        .toString(36)
+        .substring(2);
       localStorage.setItem("me", me);
     }
     cached = { app, me };

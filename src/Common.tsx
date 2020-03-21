@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const BigButton = styled.button`
   height: 48px;
@@ -11,4 +11,3 @@ export const BigButton = styled.button`
     outline: none;
   }
 `;
-
