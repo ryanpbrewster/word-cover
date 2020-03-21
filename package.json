@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@firebase/app": "^0.6.0",
+    "@firebase/auth": "^0.14.1",
+    "@firebase/database": "^0.5.24",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -10,6 +13,7 @@
     "@types/node": "^12.12.30",
     "@types/react": "^16.9.23",
     "@types/react-dom": "^16.9.5",
+    "firebase": "^7.12.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.0",

@@ -1,24 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
 import './App.css';
+import { useFirebase } from './fb';
 
 function App() {
+  const app = useFirebase();
+  const [uid, setUid] = useState<string | null>(null);
+  useEffect(() => {
+    app.auth().onAuthStateChanged((user: any) => setUid(user?.uid ?? null));
+  }, [app]);
+  
+  if (!uid) {
+    return <p>loading...</p>;
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <p>Hello, World!</p>
     </div>
   );
 }
