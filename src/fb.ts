@@ -1,5 +1,4 @@
 import firebase from 'firebase/app';
-import 'firebase/auth';
 import 'firebase/database';
 
 const CONFIG = {
@@ -13,17 +12,22 @@ const CONFIG = {
   measurementId: "G-RLV6JQN1BE"
 };
 
-
-let app: firebase.app.App | null = null;
-export function useFirebase(): firebase.app.App {
-  if (!app) {
+export interface FirebaseService {
+  readonly me: string; // the user id of this user
+  readonly app: firebase.app.App;
+}
+let cached: FirebaseService | null = null;
+export function useFirebase(): FirebaseService {
+  if (!cached) {
     console.log("[INIT] initializing application...");
-    app = firebase.initializeApp(CONFIG);
-    app.auth().signInAnonymously()
-      .then(() => console.log("logged in!"))
-      .catch(err => {
-        console.error("[AUTH] error: ", err);
-      });
+    const app = firebase.initializeApp(CONFIG);
+    let me = localStorage.getItem("me");
+    if (!me) {
+      me = Math.random().toString(36).substring(2);
+      localStorage.setItem("me", me);
+    }
+    cached = { app, me };
+    console.log(`[INIT] done initializing service:`, cached);
   }
-  return app;
+  return cached;
 }

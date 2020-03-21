@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import { BigButton } from './Common';
 
 function Home() {
   const history = useHistory();
@@ -11,6 +12,7 @@ function Home() {
     const name = nameRef.current?.value;
     if (name && room) {
       console.log(`${name} joining ${room}`);
+      localStorage.setItem("name", name);
       history.push(`/wait/${room}`);
     }
   }
@@ -37,18 +39,6 @@ const BigInput = styled.input`
   height: 24px;
   border-radius: 16px;
   padding: 2px 8px;
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const BigButton = styled.button`
-  height: 48px;
-  width: 96px;
-  border-radius: 16px;
-  margin: 24px;
-  font-size: 32px;
 
   &:focus {
     outline: none;
