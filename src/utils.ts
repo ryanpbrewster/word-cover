@@ -1,11 +1,32 @@
+import { Label, LabelMap } from './models';
+
 export function mkNonce(): string {
   return Math.random().toString(36).substring(2);
+}
+
+function shuffle<T>(xs: T[]): void {
+  for (let i=xs.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    const tmp = xs[i];
+    xs[i] = xs[j];
+    xs[j] = tmp;
+  }
 }
 
 export function splitIntoTeams(xs: string[]): string[][] {
   const ys: string[][] = [[], []];
   xs.forEach((x, i) => ys[i % 2].push(x));
   return ys;
+}
+
+export function mkMask(words: string[]): LabelMap {
+  const labels: Label[] = [];
+  for (let i=0; i < 9; i++) { labels.push('one'); }
+  for (let i=0; i < 8; i++) { labels.push('two'); }
+  for (let i=0; i < 7; i++) { labels.push('neutral'); }
+  for (let i=0; i < 1; i++) { labels.push('death'); }
+  shuffle(labels);
+  return Object.fromEntries(words.map((word, i) => [word, labels[i]]));
 }
 
 export function mkWords(): string[] {

@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
-import firebase from "firebase";
+import React, { useEffect } from "react";
 import { useFirebase } from "./fb";
-import { Redirect, useParams } from "react-router-dom";
 import { BigButton } from "./Common";
-import { mkNonce, splitIntoTeams, mkWords } from "./utils";
+import { mkNonce, splitIntoTeams, mkMask, mkWords } from "./utils";
 import styled from "styled-components";
 import { PlayingGameState, WaitingGameState } from './models';
 
@@ -16,29 +14,37 @@ function WaitingRoom({ gameId, name: myName, gameState: game}: WaitingRoomProps)
   const { app, me } = useFirebase();
 
   useEffect(() => {
+    if (me in game.players) {
+      return;
+    }
     console.log(`marking ${me}=${myName} as waiting in ${gameId}`);
     app.database().ref(`game/${gameId}`).transaction(cur => {
-      console.log(`current value = ${JSON.stringify(cur)}`);
+      console.log(`actual current value = ${JSON.stringify(cur)}`);
       if (cur.nonce !== game.nonce) {
+        console.log("nonce differs, bailing");
         return undefined;
       }
       cur.nonce = mkNonce();
       cur.players[me] = myName;
       return cur;
     });
-  }, [app, me, gameId, myName]);
+  }, [app, me, gameId, myName, game]);
 
   function startGame() {
-    console.log(`starting game ${gameId} with ${Object.entries(game.players)}`);
+    const words = mkWords();
+    const mask = mkMask(words);
     const started: PlayingGameState = {
       state: 'playing',
       nonce: mkNonce(),
       players: game.players,
       teams: splitIntoTeams(Object.keys(game.players)),
-      words: mkWords(),
+      words,
+      mask,
+      public: {},
     };
+    console.log(`starting game ${gameId} with ${JSON.stringify(started)}`);
     app.database().ref(`game/${gameId}`).transaction(cur => {
-      console.log(`current value = ${JSON.stringify(cur)}`);
+      console.log(`actual current value = ${JSON.stringify(cur)}`);
       if (cur.nonce !== game.nonce) {
         return undefined;
       }

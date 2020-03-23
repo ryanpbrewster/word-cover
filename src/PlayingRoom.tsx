@@ -1,11 +1,6 @@
-import React, { useEffect, useState } from "react";
-import firebase from "firebase";
-import { useFirebase } from "./fb";
-import { Redirect, useParams } from "react-router-dom";
-import { BigButton } from "./Common";
-import { mkNonce, splitIntoTeams, mkWords } from "./utils";
+import React from "react";
 import styled from "styled-components";
-import { PlayingGameState, WaitingGameState } from './models';
+import { Label, PlayingGameState } from './models';
 
 interface PlayingRoomProps {
   readonly gameId: string;
@@ -13,15 +8,14 @@ interface PlayingRoomProps {
   readonly name: string;
 }
 function PlayingRoom({ gameId, name: myName, gameState: game}: PlayingRoomProps) {
-  const { app, me } = useFirebase();
-
   const board = [];
   for (let i=0; i < 5; i++) {
     const row = [];
     for (let j=0; j < 5; j++) {
-      row.push(<WordCard><p>{game.words[5 * i + j]}</p></WordCard>);
+      const word = game.words[5 * i + j];
+      row.push(<WordCard key={j} label={game.mask[word]}><p>{word}</p></WordCard>);
     }
-    board.push(<GameBoardRow>{row}</GameBoardRow>);
+    board.push(<GameBoardRow key={i}>{row}</GameBoardRow>);
   }
   return <GameBoardWrapper>{board}</GameBoardWrapper>;
 }
@@ -34,15 +28,29 @@ const GameBoardRow = styled.div`
   display: flex;
   flex-direction: row;
 `;
-const WordCard = styled.div`
+
+interface WordCardProps {
+  readonly label: Label;
+}
+const WordCard = styled.div<WordCardProps>`
   display: flex;
   justify-content: center;
   align-items: center;
 
   width: 96px;
-  height: 48px;
+  height: 72px;
   border: solid 1px;
   border-radius: 16px;
+
+  background-color: ${({label}) => labelColor(label)};
 `;
+function labelColor(label: Label): string {
+  switch (label) {
+    case 'one': return 'rgb(245, 142, 135)';
+    case 'two': return 'rgb(150, 177, 255)';
+    case 'neutral': return 'rgb(222, 222, 184)';
+    case 'death': return 'rgb(89, 90, 94)';
+  }
+}
 
 export default PlayingRoom;

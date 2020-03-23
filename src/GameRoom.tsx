@@ -27,6 +27,7 @@ function GameRoom({ gameId, name: myName }: GameRoomProps) {
   useEffect(() => {
     app.database().ref(`game/${gameId}`).transaction(cur => {
       if (!cur) {
+        console.log(`game ${gameId} is new, initializing it`);
         const waiting: WaitingGameState = {
           state: 'waiting',
           nonce: mkNonce(),
@@ -35,7 +36,7 @@ function GameRoom({ gameId, name: myName }: GameRoomProps) {
         return waiting;
       }
     });
-  }, [app, gameId]);
+  }, [app, gameId, me, myName]);
   useEffect(() => {
     function cb(snap: firebase.database.DataSnapshot): void {
       setGameState(snap.val());
