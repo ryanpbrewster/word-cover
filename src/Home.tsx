@@ -13,7 +13,7 @@ function Home() {
     if (name && room) {
       console.log(`${name} joining ${room}`);
       localStorage.setItem("name", name);
-      history.push(`/wait/${room}`);
+      history.push(`/game/${room}`);
     }
   }
   return (
