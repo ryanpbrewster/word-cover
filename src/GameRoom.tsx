@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import { GameState } from "./models";
 import { useFirebase } from "./fb";
+import { WaitingGameState } from './models';
+import { mkNonce } from './utils';
 import WaitingRoom from "./WaitingRoom";
 import PlayingRoom from "./PlayingRoom";
 
@@ -20,8 +22,20 @@ interface GameRoomProps {
   readonly name: string;
 }
 function GameRoom({ gameId, name: myName }: GameRoomProps) {
-  const { app } = useFirebase();
+  const { app, me } = useFirebase();
   const [gameState, setGameState] = useState<GameState | null>(null);
+  useEffect(() => {
+    app.database().ref(`game/${gameId}`).transaction(cur => {
+      if (!cur) {
+        const waiting: WaitingGameState = {
+          state: 'waiting',
+          nonce: mkNonce(),
+          players: { [me]: myName },
+        };
+        return waiting;
+      }
+    });
+  }, [app, gameId]);
   useEffect(() => {
     function cb(snap: firebase.database.DataSnapshot): void {
       setGameState(snap.val());
