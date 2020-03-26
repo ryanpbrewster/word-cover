@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useFirebase } from "./fb";
 import { BigButton } from "./Common";
-import { mkNonce, splitIntoTeams, mkMask, mkWords } from "./utils";
 import styled from "styled-components";
-import { PlayingGameState, WaitingGameState } from './models';
+import { WaitingGameState } from './models';
 
 interface WaitingRoomProps {
   readonly me: string;

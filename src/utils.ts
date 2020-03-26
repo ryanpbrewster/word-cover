@@ -1,4 +1,4 @@
-import { Label, LabelMap, User, TeamMap, UserId } from './models';
+import { Label, LabelMap, TeamMap, UserId } from './models';
 
 export function mkNonce(): string {
   return Math.random().toString(36).substring(2);

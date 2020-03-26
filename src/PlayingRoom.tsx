@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { Label, PlayingGameState, UserId } from './models';
 import { useFirebase } from './fb';
-import { mkNonce } from './utils';
 
 interface PlayingRoomProps {
   readonly me: UserId;

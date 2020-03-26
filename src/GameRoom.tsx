@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import { GameState } from "./models";
 import { useFirebase } from "./fb";
-import { User, WaitingGameState } from './models';
-import { mkNonce } from './utils';
+import { User } from './models';
 import WaitingRoom from "./WaitingRoom";
 import PlayingRoom from "./PlayingRoom";
 
@@ -31,7 +30,7 @@ function GameRoom({ gameId, me }: GameRoomProps) {
   const app = useFirebase();
   useEffect(() => {
     return app.watchGame(gameId, me, setGame);
-  }, [app, gameId]);
+  }, [app, gameId, me]);
   
   if (!game) {
     return <p>Loading...</p>;
