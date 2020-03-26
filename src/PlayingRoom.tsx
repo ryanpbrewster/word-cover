@@ -30,11 +30,11 @@ interface WordCardProps {
 function WordCard({ me, game, word }: WordCardProps) {
   const app = useFirebase();
   let label: Label | undefined;
-  if (game.revealed[word] || game.teams[me].role === "leader") {
+  if (game.revealed[word] || game.teams[me]?.role !== "guesser") {
     label = game.mask[word];
   }
   function onClick() {
-    if (!game.revealed[word]) {
+    if (me in game.players && !game.revealed[word]) {
       app.revealWord(game, word);
     }
   }
@@ -85,8 +85,10 @@ const WordCardWrapper = styled.div<WordCardWrapperProps>`
   margin: 4px;
   padding: 4px;
 
+  font-size: 24px;
   background-color: ${({ label }) => label && labelColor(label)};
-  filter: contrast(${({ revealed }) => (revealed ? "150%" : "50%")});
+  filter: contrast(${({ revealed }) => (revealed ? "150%" : "25%")});
+
   transition: 1s;
 
   border: 2px solid rgba(200, 200, 200, 0.6);
