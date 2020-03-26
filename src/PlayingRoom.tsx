@@ -116,8 +116,11 @@ const WordCardWrapper = styled.div<WordCardWrapperProps>`
   padding: 4px;
 
   font-size: 24px;
-  color: ${({label}) => label === "black" ? "white" : "black"};
-  background-color: ${({ held, revealed, label }) => held ? "gray" : label && (revealed ? revealedColor(label) : mutedColor(label))};
+  color: ${({ label }) => (label === "black" ? "white" : "black")};
+  background-color: ${({ held, revealed, label }) =>
+    held
+      ? "gray"
+      : label && (revealed ? revealedColor(label) : mutedColor(label))};
 
   transition: 1s;
 

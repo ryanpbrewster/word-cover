@@ -65,7 +65,7 @@ interface PlayerCardProps {
   readonly team: Team;
 }
 const PlayerCard = styled.div<PlayerCardProps>`
-  grid-column: ${({team}) => team === 'red' ? 1 : 2};
+  grid-column: ${({ team }) => (team === "red" ? 1 : 2)};
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
