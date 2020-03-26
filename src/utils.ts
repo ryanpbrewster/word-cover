@@ -17,11 +17,7 @@ function shuffle<T>(xs: T[]): void {
 
 export function splitIntoTeams(users: UserId[]): TeamMap {
   return Object.fromEntries(
-    users.map((userId, idx) => {
-      const team = idx % 2 === 0 ? "red" : "blue";
-      const role = idx < 2 ? "leader" : "guesser";
-      return [userId, { team, role }];
-    })
+    users.map((userId, idx) => [userId, idx % 2 === 0 ? "red" : "blue"])
   );
 }
 
@@ -239,5 +235,5 @@ const WORDS = [
   "whale",
   "whip",
   "worm",
-  "yard",
+  "yard"
 ];

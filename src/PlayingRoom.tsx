@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { TeamRoster, labelColor } from "./Common";
+import { BigButton, TeamRoster, labelColor } from "./Common";
 import { Label, PlayingGameState, UserId } from "./models";
 import { useFirebase } from "./fb";
 
@@ -9,12 +9,27 @@ interface PlayingRoomProps {
   readonly game: PlayingGameState;
 }
 function PlayingRoom({ me, game }: PlayingRoomProps) {
+  const [revealAll, setRevealAll] = useState<boolean>(false);
   const cards = game.words.map((word, idx) => {
-    return <WordCard key={idx} me={me} game={game} word={word} />;
+    return (
+      <WordCard
+        key={idx}
+        me={me}
+        game={game}
+        word={word}
+        forceReveal={revealAll}
+      />
+    );
   });
   return (
     <GameBoard>
       <TeamRoster players={game.players} teams={game.teams} />
+      <BigButton
+        onMouseDown={() => setRevealAll(true)}
+        onMouseUp={() => setRevealAll(false)}
+      >
+        Reveal
+      </BigButton>
       <WordBoardWrapper>
         <WordBoard>{cards}</WordBoard>
       </WordBoardWrapper>
@@ -26,11 +41,12 @@ interface WordCardProps {
   readonly me: UserId;
   readonly game: PlayingGameState;
   readonly word: string;
+  readonly forceReveal: boolean;
 }
-function WordCard({ me, game, word }: WordCardProps) {
+function WordCard({ me, game, word, forceReveal }: WordCardProps) {
   const app = useFirebase();
   let label: Label | undefined;
-  if (game.revealed[word] || game.teams[me]?.role !== "guesser") {
+  if (game.revealed[word] || forceReveal) {
     label = game.mask[word];
   }
   function onClick() {

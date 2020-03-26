@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { UserMap, TeamMap, TeamId, User, Label } from "./models";
+import { UserMap, TeamMap, Team, User, Label } from "./models";
 
 export const BigButton = styled.button`
-  height: 48px;
-  width: 96px;
+  min-height: 48px;
+  min-width: 96px;
   border-radius: 16px;
   margin: 24px;
   font-size: 32px;
@@ -32,10 +32,8 @@ interface TeamRosterProps {
   readonly teams: TeamMap;
 }
 export function TeamRoster({ players, teams }: TeamRosterProps) {
-  function byTeam(team: TeamId): User[] {
-    return Object.values(players)
-      .filter(player => teams[player.id].team === team)
-      .sort((a, b) => (teams[a.id].role < teams[b.id].role ? 1 : -1));
+  function byTeam(team: Team): User[] {
+    return Object.values(players).filter(player => teams[player.id] === team);
   }
   return (
     <TeamRosterWrapper>
@@ -46,7 +44,7 @@ export function TeamRoster({ players, teams }: TeamRosterProps) {
 }
 
 interface PlayerListProps {
-  readonly team: TeamId;
+  readonly team: Team;
   readonly players: User[];
 }
 function PlayerList({ team, players }: PlayerListProps) {
@@ -68,7 +66,7 @@ const TeamRosterWrapper = styled.div`
 const PlayerListWrapper = styled.div``;
 
 interface PlayerCardProps {
-  readonly team: TeamId;
+  readonly team: Team;
 }
 const PlayerCard = styled.div<PlayerCardProps>`
   display: flex;

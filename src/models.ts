@@ -24,7 +24,7 @@ export interface PlayingGameState {
   readonly revealed: WordSet;
 }
 
-export type Label = TeamId | "gray" | "black";
+export type Label = Team | "gray" | "black";
 export type LabelMap = { [word: string]: Label };
 export type WordSet = { [word: string]: boolean };
 
@@ -36,11 +36,7 @@ export interface User {
 }
 export type UserMap = { [id: string]: User };
 
-export type TeamId = "red" | "blue";
-export type Role = "leader" | "guesser";
-export interface TeamRole {
-  readonly team: TeamId;
-  readonly role: Role;
-}
+export type Team = "red" | "blue";
+export type TeamMap = { [id: string]: Team };
 
-export type TeamMap = { [id: string]: TeamRole };
+export type Role = "leader" | "guesser";
