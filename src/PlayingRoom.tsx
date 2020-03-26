@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { BigButton, TeamRoster, labelColor } from "./Common";
+import { BigButton, TeamRoster, revealedColor, mutedColor } from "./Common";
 import { Label, PlayingGameState, UserId } from "./models";
 import { useFirebase } from "./fb";
 
@@ -27,6 +27,7 @@ function PlayingRoom({ me, game }: PlayingRoomProps) {
       <BigButton
         onMouseDown={() => setRevealAll(true)}
         onMouseUp={() => setRevealAll(false)}
+        onMouseLeave={() => setRevealAll(false)}
       >
         Reveal
       </BigButton>
@@ -45,20 +46,30 @@ interface WordCardProps {
 }
 function WordCard({ me, game, word, forceReveal }: WordCardProps) {
   const app = useFirebase();
+  const [countdown, setCountdown] = useState<number | null>(null);
   let label: Label | undefined;
   if (game.revealed[word] || forceReveal) {
     label = game.mask[word];
   }
-  function onClick() {
-    if (me in game.players && !game.revealed[word]) {
-      app.revealWord(game, word);
+  function startCountdown() {
+    if (me in game.players && !game.revealed[word] && !countdown) {
+      setCountdown(setTimeout(() => app.revealWord(game, word), 1_000));
     }
+  }
+  function stopCountdown() {
+    if (countdown) {
+      clearTimeout(countdown);
+    }
+    setCountdown(null);
   }
   return (
     <WordCardWrapper
       label={label}
       revealed={game.revealed[word]}
-      onClick={onClick}
+      held={!!countdown && !game.revealed[word]}
+      onMouseDown={startCountdown}
+      onMouseUp={stopCountdown}
+      onMouseLeave={stopCountdown}
     >
       <p>{word}</p>
     </WordCardWrapper>
@@ -83,11 +94,12 @@ const WordBoardWrapper = styled.div`
 
 const WordBoard = styled.div`
   display: grid;
-  grid-template: 1fr 1fr 1fr 1fr 1fr / 1fr 1fr 1fr 1fr 1fr;
+  grid-template: repeat(5, 1fr) / repeat(5, 1fr);
 `;
 
 interface WordCardWrapperProps {
   readonly label?: Label;
+  readonly held: boolean;
   readonly revealed: boolean;
 }
 const WordCardWrapper = styled.div<WordCardWrapperProps>`
@@ -95,6 +107,7 @@ const WordCardWrapper = styled.div<WordCardWrapperProps>`
   justify-content: center;
   align-items: center;
   flex: 1;
+  white-space: nowrap;
 
   border-radius: 16px;
 
@@ -103,8 +116,8 @@ const WordCardWrapper = styled.div<WordCardWrapperProps>`
   padding: 4px;
 
   font-size: 24px;
-  background-color: ${({ label }) => label && labelColor(label)};
-  filter: contrast(${({ revealed }) => (revealed ? "150%" : "25%")});
+  color: ${({label}) => label === "black" ? "white" : "black"};
+  background-color: ${({ held, revealed, label }) => held ? "gray" : label && (revealed ? revealedColor(label) : mutedColor(label))};
 
   transition: 1s;
 
