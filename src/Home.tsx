@@ -18,7 +18,7 @@ function Home() {
       }
       localStorage.setItem("name", name);
       localStorage.setItem("icon", name[0]);
-      history.push(`/game/${room}`);
+      history.push(`/game/${room.toUpperCase()}`);
     }
   }
   return (

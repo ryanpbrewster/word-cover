@@ -55,6 +55,7 @@ const GameBoard = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 100px;
 `;
 
 const WordBoardWrapper = styled.div`
