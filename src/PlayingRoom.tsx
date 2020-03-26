@@ -9,7 +9,7 @@ interface PlayingRoomProps {
 }
 function PlayingRoom({ me, game }: PlayingRoomProps) {
   const cards = game.words.map((word, idx) => {
-    return <WordCard key={idx} word={word} game={game} />;
+    return <WordCard key={idx} me={me} game={game} word={word} />;
   });
   return (
     <GameBoard>
@@ -21,17 +21,24 @@ function PlayingRoom({ me, game }: PlayingRoomProps) {
 }
 
 interface WordCardProps {
-  readonly word: string;
+  readonly me: UserId;
   readonly game: PlayingGameState;
+  readonly word: string;
 }
-function WordCard({ word, game }: WordCardProps) {
+function WordCard({ me, game, word }: WordCardProps) {
   const app = useFirebase();
+  let label: Label | undefined;
+  if (game.revealed[word] || game.teams[me].role === "leader") {
+    label = game.mask[word];
+  }
   function onClick() {
-    app.revealWord(game, word);
+    if (!game.revealed[word]) {
+      app.revealWord(game, word);
+    }
   }
   return (
     <WordCardWrapper
-      label={game.mask[word]}
+      label={label}
       revealed={game.revealed[word]}
       onClick={onClick}
     >
@@ -59,7 +66,7 @@ const WordBoard = styled.div`
 `;
 
 interface WordCardWrapperProps {
-  readonly label: Label;
+  readonly label?: Label;
   readonly revealed: boolean;
 }
 const WordCardWrapper = styled.div<WordCardWrapperProps>`
@@ -74,7 +81,7 @@ const WordCardWrapper = styled.div<WordCardWrapperProps>`
   margin: 4px;
   padding: 4px;
 
-  background-color: ${({ label }) => labelColor(label)};
+  background-color: ${({ label }) => label && labelColor(label)};
   filter: contrast(${({ revealed }) => (revealed ? "150%" : "50%")});
   transition: 1s;
 
