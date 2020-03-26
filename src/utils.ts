@@ -1,4 +1,4 @@
-import { Label, LabelMap } from './models';
+import { Label, LabelMap, User, TeamMap, UserId } from './models';
 
 export function mkNonce(): string {
   return Math.random().toString(36).substring(2);
@@ -13,18 +13,20 @@ function shuffle<T>(xs: T[]): void {
   }
 }
 
-export function splitIntoTeams(xs: string[]): string[][] {
-  const ys: string[][] = [[], []];
-  xs.forEach((x, i) => ys[i % 2].push(x));
-  return ys;
+export function splitIntoTeams(users: UserId[]): TeamMap {
+  return Object.fromEntries(users.map((userId, idx) => {
+    const team = idx % 2 === 0 ? 'red' : 'blue';
+    const role = idx < 2 ? 'leader' : 'guesser';
+    return [userId, { team, role }];
+  }));
 }
 
 export function mkMask(words: string[]): LabelMap {
   const labels: Label[] = [];
-  for (let i=0; i < 9; i++) { labels.push('one'); }
-  for (let i=0; i < 8; i++) { labels.push('two'); }
-  for (let i=0; i < 7; i++) { labels.push('neutral'); }
-  for (let i=0; i < 1; i++) { labels.push('death'); }
+  for (let i=0; i < 9; i++) { labels.push('red'); }
+  for (let i=0; i < 8; i++) { labels.push('blue'); }
+  for (let i=0; i < 7; i++) { labels.push('gray'); }
+  for (let i=0; i < 1; i++) { labels.push('black'); }
   shuffle(labels);
   return Object.fromEntries(words.map((word, i) => [word, labels[i]]));
 }

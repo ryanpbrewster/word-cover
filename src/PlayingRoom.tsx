@@ -1,23 +1,16 @@
 import React from "react";
 import styled from "styled-components";
-import { Label, PlayingGameState } from './models';
+import { Label, PlayingGameState, UserId } from './models';
 import { useFirebase } from './fb';
 import { mkNonce } from './utils';
 
 interface PlayingRoomProps {
-  readonly gameId: string;
-  readonly gameState: PlayingGameState;
-  readonly name: string;
+  readonly me: UserId;
+  readonly game: PlayingGameState;
 }
-function PlayingRoom({ gameId, name: myName, gameState: game}: PlayingRoomProps) {
+function PlayingRoom({ me, game}: PlayingRoomProps) {
   const cards = game.words.map((word, idx) => {
-    return <WordCard
-            key={idx}
-            gameId={gameId}
-            gameState={game}
-            word={word}
-            label={game.mask[word]}
-            revealed={game.revealed[word]}/>;
+    return <WordCard key={idx} word={word} game={game}/>;
   });
   return <GameBoard>
     <WordBoardWrapper><WordBoard>{cards}</WordBoard></WordBoardWrapper>
@@ -25,27 +18,17 @@ function PlayingRoom({ gameId, name: myName, gameState: game}: PlayingRoomProps)
 }
 
 interface WordCardProps {
-  readonly gameId: string;
-  readonly gameState: PlayingGameState;
   readonly word: string;
-  readonly label: Label;
-  readonly revealed: boolean;
+  readonly game: PlayingGameState;
 }
-function WordCard({ gameId, gameState: game, word, label, revealed }: WordCardProps) {
-  const { app } = useFirebase();
+function WordCard({ word, game }: WordCardProps) {
+  const app = useFirebase();
   function onClick() {
-    app.database().ref(`game/${gameId}`).transaction(cur => {
-      if (cur.nonce !== game.nonce) {
-        return undefined;
-      }
-      cur.nonce = mkNonce();
-      cur.revealed[word] = true;
-      return cur;
-    });
+    app.revealWord(game, word);
   }
   return <WordCardWrapper
-          label={label}
-          revealed={revealed}
+          label={game.mask[word]}
+          revealed={game.revealed[word]}
           onClick={onClick}>
     <p>{word}</p>
   </WordCardWrapper>;
@@ -95,10 +78,10 @@ const WordCardWrapper = styled.div<WordCardWrapperProps>`
 `;
 function labelColor(label: Label): string {
   switch (label) {
-    case 'one': return 'rgb(245, 142, 135)';
-    case 'two': return 'rgb(150, 177, 255)';
-    case 'neutral': return 'rgb(222, 222, 184)';
-    case 'death': return 'rgb(89, 90, 94)';
+    case 'red': return 'rgb(245, 142, 135)';
+    case 'blue': return 'rgb(150, 177, 255)';
+    case 'gray': return 'rgb(222, 222, 184)';
+    case 'black': return 'rgb(89, 90, 94)';
   }
 }
 

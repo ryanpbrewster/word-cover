@@ -2,60 +2,48 @@ import React, { useEffect, useState } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import { GameState } from "./models";
 import { useFirebase } from "./fb";
-import { WaitingGameState } from './models';
+import { User, WaitingGameState } from './models';
 import { mkNonce } from './utils';
 import WaitingRoom from "./WaitingRoom";
 import PlayingRoom from "./PlayingRoom";
 
 function SanitizedGameRoom() {
   const { gameId } = useParams();
-  const name = localStorage.getItem("name");
 
-  if (!gameId || !name) {
+  const id = localStorage.getItem("id");
+  const name = localStorage.getItem("name");
+  const icon = localStorage.getItem("icon");
+  if (!gameId || !id || !name || !icon) {
+    console.log(`redirecting back home, gameId=${gameId}, id=${id}, name=${name}, icon=${icon}`);
     return <Redirect to="/" />;
   }
-  return <GameRoom gameId={gameId} name={name} />;
+
+  const me: User = { id, name, icon };
+  return <GameRoom gameId={gameId} me={me} />;
 }
 
 interface GameRoomProps {
   readonly gameId: string;
-  readonly name: string;
+  readonly me: User;
 }
-function GameRoom({ gameId, name: myName }: GameRoomProps) {
-  const { app, me } = useFirebase();
-  const [gameState, setGameState] = useState<GameState | null>(null);
+function GameRoom({ gameId, me }: GameRoomProps) {
+  const [game, setGame] = useState<GameState | null>(null);
+  const app = useFirebase();
   useEffect(() => {
-    app.database().ref(`game/${gameId}`).transaction(cur => {
-      if (!cur) {
-        console.log(`game ${gameId} is new, initializing it`);
-        const waiting: WaitingGameState = {
-          state: 'waiting',
-          nonce: mkNonce(),
-          players: { [me]: myName },
-        };
-        return waiting;
-      }
-    });
-  }, [app, gameId, me, myName]);
-  useEffect(() => {
-    function cb(snap: firebase.database.DataSnapshot): void {
-      setGameState(snap.val());
-    }
-    const ref = app.database().ref(`game/${gameId}`);
-    ref.on("value", cb);
-    return () => ref.off("value", cb);
+    return app.watchGame(gameId, me, setGame);
   }, [app, gameId]);
-
-  if (!gameState) {
+  
+  if (!game) {
     return <p>Loading...</p>;
   } 
-  switch (gameState.state) {
+
+  switch (game.state) {
     case "waiting": 
-      return <WaitingRoom gameId={gameId} gameState={gameState} name={myName}/>;
+      return <WaitingRoom me={me.id} game={game}/>;
     case "playing":
-      return <PlayingRoom gameId={gameId} gameState={gameState} name={myName}/>;
+      return <PlayingRoom me={me.id} game={game}/>;
     default:
-      throw Error(`unknown game state: ${JSON.stringify(gameState)}`);
+      throw Error(`unknown game state: ${JSON.stringify(game)}`);
   }
 }
 

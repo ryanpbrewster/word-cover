@@ -6,55 +6,20 @@ import styled from "styled-components";
 import { PlayingGameState, WaitingGameState } from './models';
 
 interface WaitingRoomProps {
-  readonly gameId: string;
-  readonly gameState: WaitingGameState;
-  readonly name: string;
+  readonly me: string;
+  readonly game: WaitingGameState;
 }
-function WaitingRoom({ gameId, name: myName, gameState: game}: WaitingRoomProps) {
-  const { app, me } = useFirebase();
-
-  useEffect(() => {
-    if (me in game.players) {
-      return;
-    }
-    console.log(`marking ${me}=${myName} as waiting in ${gameId}`);
-    app.database().ref(`game/${gameId}`).transaction(cur => {
-      console.log(`actual current value = ${JSON.stringify(cur)}`);
-      if (cur.nonce !== game.nonce) {
-        console.log("nonce differs, bailing");
-        return undefined;
-      }
-      cur.nonce = mkNonce();
-      cur.players[me] = myName;
-      return cur;
-    });
-  }, [app, me, gameId, myName, game]);
+function WaitingRoom({ me, game}: WaitingRoomProps) {
+  const app = useFirebase();
 
   function startGame() {
-    const words = mkWords();
-    const mask = mkMask(words);
-    const revealed = Object.fromEntries(words.map((w) => [w, false]));
-    const started: PlayingGameState = {
-      state: 'playing',
-      nonce: mkNonce(),
-      players: game.players,
-      teams: splitIntoTeams(Object.keys(game.players)),
-      words,
-      mask,
-      revealed,
-    };
-    console.log(`starting game ${gameId} with ${JSON.stringify(started)}`);
-    app.database().ref(`game/${gameId}`).transaction(cur => {
-      console.log(`actual current value = ${JSON.stringify(cur)}`);
-      if (cur.nonce !== game.nonce) {
-        return undefined;
-      }
-      return started;
-    });
+    app.startGame(game);
   }
 
-  const playerContent = Object.entries(game.players).map(([id, name]) => {
-    return <PlayerCard key={id}>{name}</PlayerCard>;
+  console.log("Game:", game);
+  const playerContent = Object.entries(game.players).map(([id, player]) => {
+    console.log("PlayerCard:", id, player);
+    return <PlayerCard key={id}>{player.name}</PlayerCard>;
   });
   const disabled = Object.keys(game.players).length < 2;
   return (

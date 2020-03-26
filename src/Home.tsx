@@ -2,6 +2,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { BigButton } from "./Common";
+import { mkNonce } from "./utils";
 
 function Home() {
   const history = useHistory();
@@ -12,7 +13,13 @@ function Home() {
     const name = nameRef.current?.value;
     if (name && room) {
       console.log(`${name} joining ${room}`);
+      if (!localStorage.getItem("id")) {
+        const id = mkNonce();
+        console.log(`setting user id to ${id}`);
+        localStorage.setItem("id", id);
+      }
       localStorage.setItem("name", name);
+      localStorage.setItem("icon", name[0]);
       history.push(`/game/${room}`);
     }
   }
