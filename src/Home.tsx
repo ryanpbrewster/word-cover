@@ -12,10 +12,8 @@ function Home() {
     const room = roomRef.current?.value;
     const name = nameRef.current?.value;
     if (name && room) {
-      console.log(`${name} joining ${room}`);
       if (!localStorage.getItem("id")) {
         const id = mkNonce();
-        console.log(`setting user id to ${id}`);
         localStorage.setItem("id", id);
       }
       localStorage.setItem("name", name);

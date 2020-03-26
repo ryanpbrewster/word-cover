@@ -24,13 +24,11 @@ export class FirebaseService {
     cb: (game: GameState) => void
   ): Unsubscribe {
     function wrapper(snap: firebase.database.DataSnapshot): void {
-      console.log("GAME STATE:", snap.val());
       cb(snap.val());
     }
     const ref = this.app.database().ref(`game/${gameId}`);
     ref.on("value", wrapper);
     ref.transaction(cur => {
-      console.log(`[RPB] initializing game, cur = ${JSON.stringify(cur)}`);
       if (!cur) {
         const waiting: WaitingGameState = {
           id: gameId,
@@ -65,12 +63,10 @@ export class FirebaseService {
       mask,
       revealed
     };
-    console.log(`starting game ${game.id} with ${JSON.stringify(started)}`);
     this.app
       .database()
       .ref(`game/${game.id}`)
       .transaction(cur => {
-        console.log(`actual current value = ${JSON.stringify(cur)}`);
         if (cur.nonce !== game.nonce) {
           return undefined;
         }
@@ -83,7 +79,6 @@ export class FirebaseService {
       .database()
       .ref(`game/${game.id}`)
       .transaction(cur => {
-        console.log(`actual current value = ${JSON.stringify(cur)}`);
         if (cur.nonce !== game.nonce) {
           return undefined;
         }
@@ -96,10 +91,8 @@ export class FirebaseService {
 let cached: FirebaseService | null = null;
 export function useFirebase(): FirebaseService {
   if (!cached) {
-    console.log("[INIT] initializing application...");
     const app = firebase.initializeApp(CONFIG);
     cached = new FirebaseService(app);
-    console.log(`[INIT] done initializing service:`, cached);
   }
   return cached;
 }

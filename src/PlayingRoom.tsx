@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { TeamRoster, labelColor } from "./Common";
 import { Label, PlayingGameState, UserId } from "./models";
 import { useFirebase } from "./fb";
 
@@ -13,6 +14,7 @@ function PlayingRoom({ me, game }: PlayingRoomProps) {
   });
   return (
     <GameBoard>
+      <TeamRoster players={game.players} teams={game.teams} />
       <WordBoardWrapper>
         <WordBoard>{cards}</WordBoard>
       </WordBoardWrapper>
@@ -49,12 +51,14 @@ function WordCard({ me, game, word }: WordCardProps) {
 
 const GameBoard = styled.div`
   height: 100%;
-  display: grid;
-  grid-template: 1fr 3fr 1fr / 1fr 3fr 1fr;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;
 
 const WordBoardWrapper = styled.div`
-  grid-area: 2/2;
+  margin: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -89,17 +93,5 @@ const WordCardWrapper = styled.div<WordCardWrapperProps>`
 
   cursor: pointer;
 `;
-function labelColor(label: Label): string {
-  switch (label) {
-    case "red":
-      return "rgb(245, 142, 135)";
-    case "blue":
-      return "rgb(150, 177, 255)";
-    case "gray":
-      return "rgb(222, 222, 184)";
-    case "black":
-      return "rgb(89, 90, 94)";
-  }
-}
 
 export default PlayingRoom;

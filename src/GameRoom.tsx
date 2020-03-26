@@ -13,9 +13,6 @@ function SanitizedGameRoom() {
   const name = localStorage.getItem("name");
   const icon = localStorage.getItem("icon");
   if (!gameId || !id || !name || !icon) {
-    console.log(
-      `redirecting back home, gameId=${gameId}, id=${id}, name=${name}, icon=${icon}`
-    );
     return <Redirect to="/" />;
   }
 
