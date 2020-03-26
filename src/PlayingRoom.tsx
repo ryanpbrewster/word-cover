@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import { Label, PlayingGameState } from './models';
+import { useFirebase } from './fb';
+import { mkNonce } from './utils';
 
 interface PlayingRoomProps {
   readonly gameId: string;
@@ -9,11 +11,44 @@ interface PlayingRoomProps {
 }
 function PlayingRoom({ gameId, name: myName, gameState: game}: PlayingRoomProps) {
   const cards = game.words.map((word, idx) => {
-    return <WordCard key={idx} label={game.mask[word]}><p>{word}</p></WordCard>;
+    return <WordCard
+            key={idx}
+            gameId={gameId}
+            gameState={game}
+            word={word}
+            label={game.mask[word]}
+            revealed={game.revealed[word]}/>;
   });
   return <GameBoard>
     <WordBoardWrapper><WordBoard>{cards}</WordBoard></WordBoardWrapper>
   </GameBoard>;
+}
+
+interface WordCardProps {
+  readonly gameId: string;
+  readonly gameState: PlayingGameState;
+  readonly word: string;
+  readonly label: Label;
+  readonly revealed: boolean;
+}
+function WordCard({ gameId, gameState: game, word, label, revealed }: WordCardProps) {
+  const { app } = useFirebase();
+  function onClick() {
+    app.database().ref(`game/${gameId}`).transaction(cur => {
+      if (cur.nonce !== game.nonce) {
+        return undefined;
+      }
+      cur.nonce = mkNonce();
+      cur.revealed[word] = true;
+      return cur;
+    });
+  }
+  return <WordCardWrapper
+          label={label}
+          revealed={revealed}
+          onClick={onClick}>
+    <p>{word}</p>
+  </WordCardWrapper>;
 }
 
 const GameBoard = styled.div`
@@ -34,16 +69,16 @@ const WordBoard = styled.div`
   grid-template: 1fr 1fr 1fr 1fr 1fr / 1fr 1fr 1fr 1fr 1fr;
 `;
 
-interface WordCardProps {
+interface WordCardWrapperProps {
   readonly label: Label;
+  readonly revealed: boolean;
 }
-const WordCard = styled.div<WordCardProps>`
+const WordCardWrapper = styled.div<WordCardWrapperProps>`
   display: flex;
   justify-content: center;
   align-items: center;
   flex: 1;
 
-  border: solid 1px;
   border-radius: 16px;
 
   min-width: 48px;
@@ -51,13 +86,19 @@ const WordCard = styled.div<WordCardProps>`
   padding: 4px;
 
   background-color: ${({label}) => labelColor(label)};
+  filter: contrast(${({revealed}) => revealed ? "150%" : "50%"});
+  transition: 1s;
+
+  border: 2px solid rgba(200, 200, 200, 0.6);
+
+  cursor: pointer;
 `;
 function labelColor(label: Label): string {
   switch (label) {
-    case 'one': return 'rgb(245, 142, 135, 0.4)';
-    case 'two': return 'rgb(150, 177, 255, 0.4)';
-    case 'neutral': return 'rgb(222, 222, 184, 0.4)';
-    case 'death': return 'rgb(89, 90, 94, 0.4)';
+    case 'one': return 'rgb(245, 142, 135)';
+    case 'two': return 'rgb(150, 177, 255)';
+    case 'neutral': return 'rgb(222, 222, 184)';
+    case 'death': return 'rgb(89, 90, 94)';
   }
 }
 

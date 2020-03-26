@@ -17,11 +17,12 @@ export interface PlayingGameState {
   readonly teams: Team[];
   readonly words: string[];
   readonly mask: LabelMap;
-  readonly public: LabelMap;
+  readonly revealed: WordSet;
 }
 
 export type Label = 'one' | 'two' | 'neutral' | 'death';
 export type LabelMap = { [word: string]: Label };
+export type WordSet = { [word: string]: boolean };
 
 export type UserId = string;
 export type UserMap = { [id: string]: string };

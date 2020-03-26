@@ -33,6 +33,7 @@ function WaitingRoom({ gameId, name: myName, gameState: game}: WaitingRoomProps)
   function startGame() {
     const words = mkWords();
     const mask = mkMask(words);
+    const revealed = Object.fromEntries(words.map((w) => [w, false]));
     const started: PlayingGameState = {
       state: 'playing',
       nonce: mkNonce(),
@@ -40,7 +41,7 @@ function WaitingRoom({ gameId, name: myName, gameState: game}: WaitingRoomProps)
       teams: splitIntoTeams(Object.keys(game.players)),
       words,
       mask,
-      public: {},
+      revealed,
     };
     console.log(`starting game ${gameId} with ${JSON.stringify(started)}`);
     app.database().ref(`game/${gameId}`).transaction(cur => {
