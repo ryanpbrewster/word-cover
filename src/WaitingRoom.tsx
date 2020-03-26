@@ -2,13 +2,13 @@ import React from "react";
 import { useFirebase } from "./fb";
 import { BigButton } from "./Common";
 import styled from "styled-components";
-import { WaitingGameState } from './models';
+import { WaitingGameState } from "./models";
 
 interface WaitingRoomProps {
   readonly me: string;
   readonly game: WaitingGameState;
 }
-function WaitingRoom({ me, game}: WaitingRoomProps) {
+function WaitingRoom({ me, game }: WaitingRoomProps) {
   const app = useFirebase();
 
   function startGame() {
@@ -23,7 +23,9 @@ function WaitingRoom({ me, game}: WaitingRoomProps) {
   const disabled = Object.keys(game.players).length < 2;
   return (
     <WaitingPlayers>
-      <BigButton onClick={startGame} disabled={disabled}>Start</BigButton>
+      <BigButton onClick={startGame} disabled={disabled}>
+        Start
+      </BigButton>
       {playerContent}
     </WaitingPlayers>
   );

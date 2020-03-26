@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import { GameState } from "./models";
 import { useFirebase } from "./fb";
-import { User } from './models';
+import { User } from "./models";
 import WaitingRoom from "./WaitingRoom";
 import PlayingRoom from "./PlayingRoom";
 
@@ -13,7 +13,9 @@ function SanitizedGameRoom() {
   const name = localStorage.getItem("name");
   const icon = localStorage.getItem("icon");
   if (!gameId || !id || !name || !icon) {
-    console.log(`redirecting back home, gameId=${gameId}, id=${id}, name=${name}, icon=${icon}`);
+    console.log(
+      `redirecting back home, gameId=${gameId}, id=${id}, name=${name}, icon=${icon}`
+    );
     return <Redirect to="/" />;
   }
 
@@ -31,16 +33,16 @@ function GameRoom({ gameId, me }: GameRoomProps) {
   useEffect(() => {
     return app.watchGame(gameId, me, setGame);
   }, [app, gameId, me]);
-  
+
   if (!game) {
     return <p>Loading...</p>;
-  } 
+  }
 
   switch (game.state) {
-    case "waiting": 
-      return <WaitingRoom me={me.id} game={game}/>;
+    case "waiting":
+      return <WaitingRoom me={me.id} game={game} />;
     case "playing":
-      return <PlayingRoom me={me.id} game={game}/>;
+      return <PlayingRoom me={me.id} game={game} />;
     default:
       throw Error(`unknown game state: ${JSON.stringify(game)}`);
   }

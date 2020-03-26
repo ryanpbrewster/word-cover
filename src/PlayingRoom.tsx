@@ -1,19 +1,23 @@
 import React from "react";
 import styled from "styled-components";
-import { Label, PlayingGameState, UserId } from './models';
-import { useFirebase } from './fb';
+import { Label, PlayingGameState, UserId } from "./models";
+import { useFirebase } from "./fb";
 
 interface PlayingRoomProps {
   readonly me: UserId;
   readonly game: PlayingGameState;
 }
-function PlayingRoom({ me, game}: PlayingRoomProps) {
+function PlayingRoom({ me, game }: PlayingRoomProps) {
   const cards = game.words.map((word, idx) => {
-    return <WordCard key={idx} word={word} game={game}/>;
+    return <WordCard key={idx} word={word} game={game} />;
   });
-  return <GameBoard>
-    <WordBoardWrapper><WordBoard>{cards}</WordBoard></WordBoardWrapper>
-  </GameBoard>;
+  return (
+    <GameBoard>
+      <WordBoardWrapper>
+        <WordBoard>{cards}</WordBoard>
+      </WordBoardWrapper>
+    </GameBoard>
+  );
 }
 
 interface WordCardProps {
@@ -25,12 +29,15 @@ function WordCard({ word, game }: WordCardProps) {
   function onClick() {
     app.revealWord(game, word);
   }
-  return <WordCardWrapper
-          label={game.mask[word]}
-          revealed={game.revealed[word]}
-          onClick={onClick}>
-    <p>{word}</p>
-  </WordCardWrapper>;
+  return (
+    <WordCardWrapper
+      label={game.mask[word]}
+      revealed={game.revealed[word]}
+      onClick={onClick}
+    >
+      <p>{word}</p>
+    </WordCardWrapper>
+  );
 }
 
 const GameBoard = styled.div`
@@ -67,8 +74,8 @@ const WordCardWrapper = styled.div<WordCardWrapperProps>`
   margin: 4px;
   padding: 4px;
 
-  background-color: ${({label}) => labelColor(label)};
-  filter: contrast(${({revealed}) => revealed ? "150%" : "50%"});
+  background-color: ${({ label }) => labelColor(label)};
+  filter: contrast(${({ revealed }) => (revealed ? "150%" : "50%")});
   transition: 1s;
 
   border: 2px solid rgba(200, 200, 200, 0.6);
@@ -77,10 +84,14 @@ const WordCardWrapper = styled.div<WordCardWrapperProps>`
 `;
 function labelColor(label: Label): string {
   switch (label) {
-    case 'red': return 'rgb(245, 142, 135)';
-    case 'blue': return 'rgb(150, 177, 255)';
-    case 'gray': return 'rgb(222, 222, 184)';
-    case 'black': return 'rgb(89, 90, 94)';
+    case "red":
+      return "rgb(245, 142, 135)";
+    case "blue":
+      return "rgb(150, 177, 255)";
+    case "gray":
+      return "rgb(222, 222, 184)";
+    case "black":
+      return "rgb(89, 90, 94)";
   }
 }
 
