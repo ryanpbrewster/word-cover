@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { UserMap, TeamMap, Team, User, Label } from "./models";
+import { UserMap, TeamMap, Team, Label } from "./models";
 
 export const BigButton = styled.button`
   min-height: 48px;
@@ -22,19 +22,6 @@ export function revealedColor(label: Label): string {
       return "rgb(150, 177, 255)";
     case "gray":
       return "rgb(241, 238, 156)";
-    case "black":
-      return "rgb(0, 0, 0)";
-  }
-}
-
-export function mutedColor(label: Label): string {
-  switch (label) {
-    case "red":
-      return "rgb(245, 142, 135, 0.5)";
-    case "blue":
-      return "rgb(150, 177, 255, 0.5)";
-    case "gray":
-      return "rgb(241, 238, 156, 0.2)";
     case "black":
       return "rgb(0, 0, 0)";
   }

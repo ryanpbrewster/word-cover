@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { BigButton, TeamRoster, revealedColor, mutedColor } from "./Common";
+import { BigButton, TeamRoster, revealedColor } from "./Common";
 import { Label, PlayingGameState, UserId, Word } from "./models";
 import { useFirebase } from "./fb";
 import { Image } from "./Image";
@@ -113,19 +113,17 @@ const WordCardWrapper = styled.div<WordCardWrapperProps>`
 
   min-width: 48px;
   margin: 4px;
-  padding: 4px;
+  padding: 8px;
 
   font-size: 24px;
   border: 8px solid;
   background-color: ${({ held, revealed, label }) =>
-    held
-      ? "gray"
-      : label && (revealed ? revealedColor(label) : mutedColor(label))};
+    held ? "gray" : label && revealedColor(label)};
   border-color: ${({ held, revealed, label }) =>
-      (label && revealed) ? revealedColor(label) : "black"};
+    revealed ? "white" : "black"};
+  opacity: ${({ revealed }) => (revealed ? "50%" : "100%")};
 
   transition: 500ms;
-
 
   cursor: pointer;
 `;

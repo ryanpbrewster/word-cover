@@ -1,6 +1,12 @@
 import firebase from "firebase/app";
 import "firebase/database";
-import { GameState, User, WaitingGameState, PlayingGameState, Word } from "./models";
+import {
+  GameState,
+  User,
+  WaitingGameState,
+  PlayingGameState,
+  Word
+} from "./models";
 import { splitIntoTeams, mkWords, mkNonce } from "./utils";
 
 const CONFIG = {
@@ -57,7 +63,7 @@ export class FirebaseService {
       nonce: mkNonce(),
       players,
       teams,
-      words,
+      words
     };
     this.app
       .database()
