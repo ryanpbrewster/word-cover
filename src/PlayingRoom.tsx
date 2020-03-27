@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { BigButton, TeamRoster, revealedColor, mutedColor } from "./Common";
 import { Label, PlayingGameState, UserId, Word } from "./models";
 import { useFirebase } from "./fb";
+import { Image } from "./Image";
 
 interface PlayingRoomProps {
   readonly me: UserId;
@@ -71,7 +72,7 @@ function WordCard({ me, game, word, forceReveal }: WordCardProps) {
       onMouseUp={stopCountdown}
       onMouseLeave={stopCountdown}
     >
-      <p>{word.value}</p>
+      <Image name={word.value} />
     </WordCardWrapper>
   );
 }
@@ -115,15 +116,16 @@ const WordCardWrapper = styled.div<WordCardWrapperProps>`
   padding: 4px;
 
   font-size: 24px;
-  color: ${({ label }) => (label === "black" ? "white" : "black")};
+  border: 8px solid;
   background-color: ${({ held, revealed, label }) =>
     held
       ? "gray"
       : label && (revealed ? revealedColor(label) : mutedColor(label))};
+  border-color: ${({ held, revealed, label }) =>
+      (label && revealed) ? revealedColor(label) : "black"};
 
-  transition: 1s;
+  transition: 500ms;
 
-  border: 2px solid rgba(200, 200, 200, 0.6);
 
   cursor: pointer;
 `;

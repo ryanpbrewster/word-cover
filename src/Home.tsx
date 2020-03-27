@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { BigButton } from "./Common";
 import { mkNonce } from "./utils";
+import { Image, ALL } from "./Image";
 
 function Home() {
   const history = useHistory();
@@ -23,6 +24,7 @@ function Home() {
   }
   return (
     <HomeWrapper>
+      <Image name={ALL[Math.floor(Math.random() * ALL.length)]} />
       <h3>Room Code</h3>
       <BigInput
         type="text"
