@@ -30,7 +30,7 @@ function Home() {
         type="text"
         ref={roomRef}
         placeholder="Enter Room Code"
-        maxLength={4}
+        maxLength={6}
         style={{ textTransform: "uppercase" }}
       />
 

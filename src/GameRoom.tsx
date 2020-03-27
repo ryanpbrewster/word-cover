@@ -6,13 +6,14 @@ import { User } from "./models";
 import WaitingRoom from "./WaitingRoom";
 import PlayingRoom from "./PlayingRoom";
 
+const GAME_ID_REGEX = /^[A-Za-z0-9]+$/;
 function SanitizedGameRoom() {
   const { gameId } = useParams();
 
   const id = localStorage.getItem("id");
   const name = localStorage.getItem("name");
   const icon = localStorage.getItem("icon");
-  if (!gameId || !id || !name || !icon) {
+  if (!gameId || !id || !name || !icon || !GAME_ID_REGEX.test(gameId)) {
     return <Redirect to="/" />;
   }
 
