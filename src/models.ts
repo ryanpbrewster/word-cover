@@ -19,14 +19,15 @@ export interface PlayingGameState {
   readonly nonce: string;
   readonly players: UserMap;
   readonly teams: TeamMap;
-  readonly words: string[];
-  readonly mask: LabelMap;
-  readonly revealed: WordSet;
+  readonly words: Word[];
 }
 
+export interface Word {
+  readonly value: string;
+  readonly revealed: boolean;
+  readonly label: Label;
+}
 export type Label = Team | "gray" | "black";
-export type LabelMap = { [word: string]: Label };
-export type WordSet = { [word: string]: boolean };
 
 export type UserId = string;
 export interface User {

@@ -1,7 +1,7 @@
 import firebase from "firebase/app";
 import "firebase/database";
-import { GameState, User, WaitingGameState, PlayingGameState } from "./models";
-import { splitIntoTeams, mkMask, mkWords, mkNonce } from "./utils";
+import { GameState, User, WaitingGameState, PlayingGameState, Word } from "./models";
+import { splitIntoTeams, mkWords, mkNonce } from "./utils";
 
 const CONFIG = {
   apiKey: "AIzaSyBxBnQGMQ8IkCmZn78uOlGWW3Si3Q9li9Q",
@@ -49,8 +49,6 @@ export class FirebaseService {
 
   startGame(game: WaitingGameState): void {
     const words = mkWords();
-    const mask = mkMask(words);
-    const revealed = Object.fromEntries(words.map(w => [w, false]));
     const players = game.players;
     const teams = splitIntoTeams(Object.keys(players));
     const started: PlayingGameState = {
@@ -60,8 +58,6 @@ export class FirebaseService {
       players,
       teams,
       words,
-      mask,
-      revealed
     };
     this.app
       .database()
@@ -83,7 +79,7 @@ export class FirebaseService {
           return undefined;
         }
         cur.nonce = mkNonce();
-        cur.revealed[word] = true;
+        cur.words.find((w: Word) => w.value === word).revealed = true;
         return cur;
       });
   }

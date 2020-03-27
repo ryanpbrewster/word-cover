@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { BigButton, TeamRoster, revealedColor, mutedColor } from "./Common";
-import { Label, PlayingGameState, UserId } from "./models";
+import { Label, PlayingGameState, UserId, Word } from "./models";
 import { useFirebase } from "./fb";
 
 interface PlayingRoomProps {
@@ -41,19 +41,19 @@ function PlayingRoom({ me, game }: PlayingRoomProps) {
 interface WordCardProps {
   readonly me: UserId;
   readonly game: PlayingGameState;
-  readonly word: string;
+  readonly word: Word;
   readonly forceReveal: boolean;
 }
 function WordCard({ me, game, word, forceReveal }: WordCardProps) {
   const app = useFirebase();
   const [countdown, setCountdown] = useState<number | null>(null);
   let label: Label | undefined;
-  if (game.revealed[word] || forceReveal) {
-    label = game.mask[word];
+  if (word.revealed || forceReveal) {
+    label = word.label;
   }
   function startCountdown() {
-    if (me in game.players && !game.revealed[word] && !countdown) {
-      setCountdown(setTimeout(() => app.revealWord(game, word), 1_000));
+    if (me in game.players && !word.revealed && !countdown) {
+      setCountdown(setTimeout(() => app.revealWord(game, word.value), 1_000));
     }
   }
   function stopCountdown() {
@@ -65,13 +65,13 @@ function WordCard({ me, game, word, forceReveal }: WordCardProps) {
   return (
     <WordCardWrapper
       label={label}
-      revealed={game.revealed[word]}
-      held={!!countdown && !game.revealed[word]}
+      revealed={word.revealed}
+      held={!!countdown && !word.revealed}
       onMouseDown={startCountdown}
       onMouseUp={stopCountdown}
       onMouseLeave={stopCountdown}
     >
-      <p>{word}</p>
+      <p>{word.value}</p>
     </WordCardWrapper>
   );
 }
@@ -107,7 +107,6 @@ const WordCardWrapper = styled.div<WordCardWrapperProps>`
   justify-content: center;
   align-items: center;
   flex: 1;
-  white-space: nowrap;
 
   border-radius: 16px;
 
